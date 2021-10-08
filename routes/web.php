@@ -1,5 +1,7 @@
 <?php
 
+use App\Http\Controllers\BaseController;
+use App\Http\Controllers\OneController;
 use App\Http\Livewire\Admin\AdminDashboerdComponent;
 use App\Http\Livewire\CartComponent;
 use App\Http\Livewire\CheckoutComponent;
@@ -32,3 +34,4 @@ Route::middleware(['auth:sanctum', 'verified'])->group(function () {
 Route::middleware(['auth:sanctum', 'verified', 'authadmin'])->group(function () {
     Route::get('admin/dashboard', AdminDashboerdComponent::class)->name('admin.dashboard');
 });
+Route::get('alia', [BaseController::class, 'index']);

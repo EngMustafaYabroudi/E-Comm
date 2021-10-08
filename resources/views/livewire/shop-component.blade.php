@@ -16,7 +16,7 @@
 
 					<div class="banner-shop">
 						<a href="#" class="banner-link">
-							<figure><img src="assets/images/shop-banner.jpg" alt=""></figure>
+							<figure><img src="{{ asset('assets/images/shop-banner.jpg') }}" alt=""></figure>
 						</a>
 					</div>
 
@@ -67,8 +67,8 @@
 							<li class="col-lg-4 col-md-6 col-sm-6 col-xs-6 ">
 								<div class="product product-style-3 equal-elem ">
 									<div class="product-thumnail">
-										<a href="detail.html" title="{{$product->name}}">
-											<figure><img src="{{ asset('assets/images/products') }}/{{$product->image}}.jpg" alt="{{$product->name}}"></figure>
+										<a href="{{ route('product.details', ['slug'=>$product->slug]) }}" title="{{$product->name}}">
+											<figure><img src="{{ asset('assets/images/products') }}/{{$product->image}}" alt="{{$product->name}}"></figure>
 										</a>
 									</div>
 									<div class="product-info">
