@@ -17,16 +17,17 @@ class CreateProductsTable extends Migration
             $table->id();
             $table->string('name');
             $table->string('slug')->unique();
-            $table->string('short_description')->nullable();
-            $table->text('description');
-            $table->decimal('regular_price');
-            $table->decimal('sale_price')->nullable();
-            $table->string('SKU');
+            /* $table->string('short_description')->nullable();
+            $table->text('description'); */
+            $table->integer('regular_price');
+            /* $table->decimal('sale_price')->nullable(); */
+            /* $table->string('SKU');
             $table->enum('stock_status', ['instock', 'outofstock']);
-            $table->boolean('featured')->default(false);
+            $table->boolean('featured')->default(false); */
             $table->unsignedInteger('quantity')->default(11);
             $table->string('image')->nullable();
-            $table->text('images')->nullable();
+            $table->date('expiry_date', 'Y-m-d')->nullable();
+            $table->string('commun_info');
             $table->bigInteger('category_id')->unsigned()->nullable();
             $table->timestamps();
             $table->foreign('category_id')->references('id')->on('categories')->onDelete('cascade');
