@@ -23,7 +23,8 @@ class ProductController extends Controller
     }
     public function index()
     {
-        return Product::all();
+
+        return Product::paginate(2);
     }
 
     /**
@@ -46,7 +47,7 @@ class ProductController extends Controller
             'expiry_date'              => 'required|date',
             'commun_info'              => 'required|url'
         ]);
-        if (Carbon::createFromFormat('Y-m-d', $request->expiry_date) == Carbon::now()->format('Y-m-d')) {
+        if ($request->expiry_date == Carbon::now()->format('Y-m-d')) {
             return "this product has finshed Expriate Date";
         }
         $product = new Product();
@@ -84,7 +85,7 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->increment('views');
-        if (Carbon::createFromFormat('Y-m-d', $product->expiry_date) == Carbon::now()->format('Y-m-d')) {
+        if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
         }
@@ -114,7 +115,7 @@ class ProductController extends Controller
         ]); */
         //dd("hello");
         //return $request->all();
-        if (Carbon::createFromFormat('Y-m-d', $product->expiry_date) == Carbon::now()->format('Y-m-d')) {
+        if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
         }
