@@ -5,6 +5,7 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
+use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Str;
@@ -18,7 +19,7 @@ class ProductController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        //$this->middleware('auth:sanctum')->except(['index', 'show']);
     }
     public function index()
     {
@@ -81,6 +82,7 @@ class ProductController extends Controller
      */
     public function show(Product $product)
     {
+        $product->increment('views');
         return $product;
     }
 
@@ -106,7 +108,7 @@ class ProductController extends Controller
             'commun_info'              => 'required|url'
         ]); */
         //dd("hello");
-        ///return $request->all();
+        //return $request->all();
         $product->name = $request->name;
         $product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
@@ -138,20 +140,23 @@ class ProductController extends Controller
      */
     public function destroy(Product $product)
     {
-        $product->/* onlyTrashed(); */delete();
+        //$product->delete();
+        $product->delete();
         return "has delete";
     }
     public function restoreAll()
     {
+        //return "sfgdhgjkh";
         Product::onlyTrashed()->restore();
 
-        return back();
+        return "has return products";
     }
-    public function restore(Product $product)
+    public function restore($id)
     {
+        $product = Product::findOrFail($id);
         $product->withTrashed()->restore();
 
-        return back();
+        return "with returned";
     }
     public function search(Request $request)
     {

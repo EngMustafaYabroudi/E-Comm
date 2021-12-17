@@ -4,11 +4,15 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use Illuminate\Database\Eloquent\SoftDeletes;
 
 class Product extends Model
 {
-    use HasFactory;
-    protected $fillable = ['name', 'slug', 'regular_price', 'expriy_date', 'image', 'quantity', 'commun_info', 'category_id'];
+    use HasFactory, SoftDeletes;
+
+    protected $fillable = ['name', 'deleted_at', 'slug', 'regular_price', 'expriy_date', 'image', 'quantity', 'commun_info', 'category_id', 'views'];
+    protected $softDelete = true;
+
     public function category()
     {
         return $this->belongsTo(Category::class);
