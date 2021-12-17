@@ -46,8 +46,9 @@ class ProductController extends Controller
             'expiry_date'              => 'required|date',
             'commun_info'              => 'required|url'
         ]);
-        //dd($request->all());
-        // return $request->all();
+        if (Carbon::createFromFormat('Y-m-d', $request->expiry_date) == Carbon::now()->format('Y-m-d')) {
+            return "this product has finshed Expriate Date";
+        }
         $product = new Product();
         $product->name = $request->name;
         $product->slug = Str::slug($request->name, '-');
@@ -83,6 +84,10 @@ class ProductController extends Controller
     public function show(Product $product)
     {
         $product->increment('views');
+        if (Carbon::createFromFormat('Y-m-d', $product->expiry_date) == Carbon::now()->format('Y-m-d')) {
+            $product->delete();
+            return "this product has finshed Expriate Date";
+        }
         return $product;
     }
 
@@ -109,6 +114,10 @@ class ProductController extends Controller
         ]); */
         //dd("hello");
         //return $request->all();
+        if (Carbon::createFromFormat('Y-m-d', $product->expiry_date) == Carbon::now()->format('Y-m-d')) {
+            $product->delete();
+            return "this product has finshed Expriate Date";
+        }
         $product->name = $request->name;
         $product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
