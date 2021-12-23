@@ -8,6 +8,7 @@ use App\Models\Product;
 use Illuminate\Database\Eloquent\SoftDeletingScope;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Str;
 
 class ProductController extends Controller
@@ -19,12 +20,13 @@ class ProductController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum')->except(['index', 'show']);
     }
     public function index()
     {
 
-        return Product::paginate(2);
+        return Product::paginate(4);
+        /*  return  Product::where('deleted_at', '2021-12-17 08:39:24')->get(); */
     }
 
     /**
@@ -37,7 +39,7 @@ class ProductController extends Controller
     {
         $request->validate([
             'name'                     => 'required|min:4|max:255',
-            'slug'                     => 'required|min:4',
+            //'slug'                     => 'required|min:4',
             'regular_price'            => 'required|numeric|min:0',
             'commun_info'              => 'required|min:4',
             'image'                    => 'required_without:image_upload|url|nullable',
@@ -52,7 +54,7 @@ class ProductController extends Controller
         }
         $product = new Product();
         $product->name = $request->name;
-        $product->slug = Str::slug($request->name, '-');
+        //$product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
         $product->quantity = $request->quantity;
         if ($request->has('image_upload')) {
@@ -62,6 +64,8 @@ class ProductController extends Controller
         } else {
             $product->image = $request->image;
         }
+        //return Auth::user();
+        $product->user_id = auth()->user()->id;
         $product->category_id = $request->category_id;
         $product->expiry_date = $request->expiry_date;
         /*  $product->regular_price = $request->regular_price; */
@@ -73,6 +77,7 @@ class ProductController extends Controller
 
 
         $product->save();
+        //$product->users()->sync($request->users);
         return ['product' => $product];
     }
 
@@ -82,8 +87,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function show(Product $product)
+    public function show($id)
     {
+        $product = Product::findOrFail($id);
         $product->increment('views');
         if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
             $product->delete();
@@ -100,21 +106,9 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function update(Request $request, Product $product)
+    public function update(Request $request, $id)
     {
-        /* $request->validate([
-            'name'                     => 'required|min:4|max:255',
-            'slug'                     => 'required|min:4',
-            'regular_price'            => 'required|numeric|min:0',
-            'commun_info'              => 'required|min:4',
-            'image'                    => 'required_without:image_upload|url|nullable',
-            'image_upload'             => 'required_without:image|file|image|nullable',
-            'quantity'                 => 'required|numeric|min:0',
-            'category_id'              => 'required|numeric|exists:categories,id',
-            'commun_info'              => 'required|url'
-        ]); */
-        //dd("hello");
-        //return $request->all();
+        $product = Product::findOrFail($id);
         if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
@@ -131,7 +125,7 @@ class ProductController extends Controller
             $product->image = $request->image;
         }
         $product->category_id = $request->category_id;
-
+        $product->user_id = Auth::user()->id;
         if (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(30) >= Carbon::now()) {
             $product->regular_price = $request->regular_price - ($request->regular_price * 30 / 100);
         } elseif (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(15) >= Carbon::now()) {
@@ -148,9 +142,10 @@ class ProductController extends Controller
      * @param  Product  $product
      * @return \Illuminate\Http\Response
      */
-    public function destroy(Product $product)
+    public function destroy($id)
     {
         //$product->delete();
+        $product = Product::findOrFail($id);
         $product->delete();
         return "has delete";
     }

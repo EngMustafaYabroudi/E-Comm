@@ -13,6 +13,7 @@ use App\Http\Livewire\ShopComponent;
 use App\Http\Livewire\User\UserDashboerdComponent;
 use App\Models\Category;
 use Illuminate\Support\Carbon;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Route;
 
 /*
@@ -29,7 +30,7 @@ use Illuminate\Support\Facades\Route;
 Route::resource('products', ProductController::class);
 Route::get('/g', function () {
     if (Carbon::createFromFormat("Y-m-d", "1111-1-1")->subDays(30) <= Carbon::now())
-        return date('Y-m-d');
+        return Auth::user()->id;
 });
 Route::resource('/categories', CategoryController::class);
 Route::get('/', HomeComponent::class);
