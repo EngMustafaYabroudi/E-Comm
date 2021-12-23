@@ -49,7 +49,7 @@ class ProductController extends Controller
             'expiry_date'              => 'required|date',
             'commun_info'              => 'required|url'
         ]);
-        if ($request->expiry_date == Carbon::now()->format('Y-m-d')) {
+        if ($request->expiry_date <= Carbon::now()->format('Y-m-d')) {
             return "this product has finshed Expriate Date";
         }
         $product = new Product();
@@ -91,7 +91,7 @@ class ProductController extends Controller
     {
         $product = Product::findOrFail($id);
         $product->increment('views');
-        if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
+        if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
         }
@@ -109,7 +109,7 @@ class ProductController extends Controller
     public function update(Request $request, $id)
     {
         $product = Product::findOrFail($id);
-        if ($product->expiry_date == Carbon::now()->format('Y-m-d')) {
+        if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
         }
