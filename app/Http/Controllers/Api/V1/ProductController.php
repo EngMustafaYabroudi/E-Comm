@@ -53,6 +53,9 @@ class ProductController extends Controller
             return "this product has finshed Expriate Date";
         }
         $product = new Product();
+        if (Auth::user()->id == Product::where('name', $request->name)->first()->user_id) {
+            return "this product found";
+        }
         $product->name = $request->name;
         //$product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
@@ -112,6 +115,9 @@ class ProductController extends Controller
         if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
+        }
+        if (Auth::user()->id == Product::where('name', $request->name)->first()->user_id) {
+            return "this product found";
         }
         $product->name = $request->name;
         $product->slug = Str::slug($request->name, '-');
