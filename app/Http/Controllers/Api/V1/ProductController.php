@@ -5,7 +5,8 @@ namespace App\Http\Controllers\Api\V1;
 use App\Http\Controllers\Controller;
 use App\Models\Category;
 use App\Models\Product;
-use Illuminate\Database\Eloquent\SoftDeletingScope;
+use App\Models\ProductUser;
+use App\Models\User;
 use Illuminate\Http\Request;
 use Illuminate\Support\Carbon;
 use Illuminate\Support\Facades\Auth;
@@ -20,7 +21,7 @@ class ProductController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum');
     }
     public function index()
     {
@@ -37,27 +38,27 @@ class ProductController extends Controller
 
     public function store(Request $request)
     {
+
         $request->validate([
             'name'                     => 'required|min:4|max:255',
-            //'slug'                     => 'required|min:4',
             'regular_price'            => 'required|numeric|min:0',
-            'commun_info'              => 'required|min:4',
+            'commun_info'              => 'required|min:4|url',
             'image'                    => 'required_without:image_upload|url|nullable',
             'image_upload'             => 'required_without:image|file|image|nullable',
             'quantity'                 => 'required|numeric|min:0',
             'category_id'              => 'required|numeric|exists:categories,id',
             'expiry_date'              => 'required|date',
-            'commun_info'              => 'required|url'
         ]);
         if ($request->expiry_date <= Carbon::now()->format('Y-m-d')) {
             return "this product has finshed Expriate Date";
         }
         $product = new Product();
-        if (Auth::user()->id == Product::where('name', $request->name)->first()->user_id) {
-            return "this product found";
-        }
+        /* return "zfxv"; */
+        /*   if (Auth::user()->id == Product::where('name', 'like', $request->name)->first()->user_id) {
+            return response(['this product is found'])/* ->withErrors(500) ;
+        } */
+
         $product->name = $request->name;
-        //$product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
         $product->quantity = $request->quantity;
         if ($request->has('image_upload')) {
@@ -67,8 +68,6 @@ class ProductController extends Controller
         } else {
             $product->image = $request->image;
         }
-        //return Auth::user();
-        $product->user_id = auth()->user()->id;
         $product->category_id = $request->category_id;
         $product->expiry_date = $request->expiry_date;
         /*  $product->regular_price = $request->regular_price; */
@@ -80,7 +79,13 @@ class ProductController extends Controller
 
 
         $product->save();
+        //return $product;
         //$product->users()->sync($request->users);
+
+        $prod_user = ProductUser::create([
+            'user_id'    =>    Auth::user()->id,
+            'product_id' =>    $product->id
+        ]);
         return ['product' => $product];
     }
 
@@ -90,15 +95,42 @@ class ProductController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
+
+
+    public function comment(Request $request, $id)
+    {
+        $prod_user = new ProductUser();
+        $prod_user->user_id = Auth::user()->id;
+        $prod_user->product_id = $id;
+        $prod_user->comment = $request->comment;
+        $prod_user->check = 0;
+        $prod_user->save();
+        return ['comment' => $prod_user];
+    }
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $product->increment('views');
+        $user = ProductUser::where('product_id', $id)->first();
+        if ($user->user_id == Auth::user()->id && $user->check == 0) {
+            $product->increment('views');
+            $user->update([
+                'user_id'    =>  Auth::user()->id,
+                'product_id' =>  $id,
+                'check'      => 1
+            ]);
+            /* "name":"alia",
+            "expiry_date":"2022-8-25",
+            "image":"http://127.0.0.1:8000/api/products",
+            "commun_info":"http://127.0.0.1:8000/api/products",
+            "category_id":1,
+            "regular_price":444,
+            "quantity":444 */
+        }
         if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
             $product->delete();
             return "this product has finshed Expriate Date";
         }
-        return $product;
+        return ['product' => $product];
     }
 
 
@@ -116,9 +148,6 @@ class ProductController extends Controller
             $product->delete();
             return "this product has finshed Expriate Date";
         }
-        if (Auth::user()->id == Product::where('name', $request->name)->first()->user_id) {
-            return "this product found";
-        }
         $product->name = $request->name;
         $product->slug = Str::slug($request->name, '-');
         $product->commun_info = $request->commun_info;
@@ -131,7 +160,6 @@ class ProductController extends Controller
             $product->image = $request->image;
         }
         $product->category_id = $request->category_id;
-        $product->user_id = Auth::user()->id;
         if (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(30) >= Carbon::now()) {
             $product->regular_price = $request->regular_price - ($request->regular_price * 30 / 100);
         } elseif (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(15) >= Carbon::now()) {
@@ -150,10 +178,9 @@ class ProductController extends Controller
      */
     public function destroy($id)
     {
-        //$product->delete();
         $product = Product::findOrFail($id);
         $product->delete();
-        return "has delete";
+        return "has deleted";
     }
     public function restoreAll()
     {
@@ -168,6 +195,11 @@ class ProductController extends Controller
         $product->withTrashed()->restore();
 
         return "with returned";
+    }
+    public function sort(Request $request)
+    {
+        $sort =  $request->sort;
+        return  Product::orderBy($sort, 'desc')->limit(6)->get();
     }
     public function search(Request $request)
     {

@@ -30,7 +30,8 @@ use Illuminate\Support\Facades\Route;
 Route::resource('products', ProductController::class);
 Route::get('/g', function () {
     if (Carbon::createFromFormat("Y-m-d", "1111-1-1")->subDays(30) <= Carbon::now())
-        return Auth::user()->id;
+        return Carbon::now();
+    return Auth::user()->id;
 });
 Route::resource('/categories', CategoryController::class);
 Route::get('/', HomeComponent::class);

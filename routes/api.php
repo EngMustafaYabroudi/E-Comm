@@ -4,7 +4,9 @@ use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
 use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\App;
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Session;
 
 /*
 |--------------------------------------------------------------------------
@@ -30,3 +32,15 @@ Route::resource('/products', ProductController::class);
 Route::get('/restore/{id}', [ProductController::class, 'restore']);
 Route::get('/restoreAll', [ProductController::class, 'restoreAll']);
 Route::get('/search', [ProductController::class, 'search']);
+Route::get('/sort', [ProductController::class, 'sort']);
+Route::post('/comment/{id}', [ProductController::class, 'comment']);
+Route::get('/lang/{locale}', function ($locale, Request $request) {
+    if (!in_array($locale, ['ar', 'en'])) {
+        abort(400);
+    }
+    App::setLocale($locale);
+    ///$request->session()->put('locale', $locale);
+    // return Session::get('locale');
+    $ll = __('auth.email');
+    return $ll;
+});

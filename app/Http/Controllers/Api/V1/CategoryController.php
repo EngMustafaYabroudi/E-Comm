@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function __construct()
     {
-        //$this->middleware('auth:sanctum')->except(['index', 'show']);
+        $this->middleware('auth:sanctum');
     }
 
     /**
@@ -39,7 +39,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name'  => 'required|min:3|max:255',
-            'slug'  => 'required|min:3|string',
+            //'slug'  => 'required|min:3|string',
 
         ]);
 
@@ -76,7 +76,7 @@ class CategoryController extends Controller
     {
         $request->validate([
             'name'  => 'required|min:4|max:255',
-            'slug'  => 'required|min:4|string',
+            //'slug'  => 'required|min:4|string',
 
         ]);
 

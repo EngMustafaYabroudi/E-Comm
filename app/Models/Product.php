@@ -10,16 +10,16 @@ class Product extends Model
 {
     use HasFactory, SoftDeletes;
 
-    protected $fillable = ['name', 'deleted_at','regular_price', 'expriy_date', 'image', 'quantity', 'commun_info', 'category_id', 'views'];
+    protected $fillable = ['name', 'deleted_at', 'regular_price', 'expriy_date', 'image', 'quantity', 'commun_info', 'category_id', 'views'];
     protected $softDelete = true;
 
     public function category()
     {
         return $this->belongsTo(Category::class);
     }
-    public function user()
+    public function users()
     {
-        return $this->belongsTo(User::class);
+        return $this->belongsToMany(User::class);
     }
     /*     public function getRouteKeyName()
     {
