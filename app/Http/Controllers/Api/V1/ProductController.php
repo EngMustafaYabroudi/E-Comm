@@ -36,6 +36,7 @@ class ProductController extends Controller
      * @return \Illuminate\Http\Response
      */
 
+
     public function store(Request $request)
     {
 
@@ -70,7 +71,7 @@ class ProductController extends Controller
         }
         $product->category_id = $request->category_id;
         $product->expiry_date = $request->expiry_date;
-        /*  $product->regular_price = $request->regular_price; */
+        $product->sale_price = $request->sale_price;
         if (Carbon::createFromFormat('Y-m-d', $request->expiry_date)->subDays(30) >= Carbon::now()) {
             $product->regular_price = $request->regular_price - ($request->regular_price * 30 / 100);
         } elseif (Carbon::createFromFormat('Y-m-d', $request->expiry_date)->subDays(15) >= Carbon::now()) {
@@ -159,6 +160,7 @@ class ProductController extends Controller
         } else {
             $product->image = $request->image;
         }
+        $product->sale_price = $request->sale_price;
         $product->category_id = $request->category_id;
         if (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(30) >= Carbon::now()) {
             $product->regular_price = $request->regular_price - ($request->regular_price * 30 / 100);
