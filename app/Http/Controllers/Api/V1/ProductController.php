@@ -71,12 +71,12 @@ class ProductController extends Controller
         }
         $product->category_id = $request->category_id;
         $product->expiry_date = $request->expiry_date;
-        $product->sale_price = $request->sale_price;
+        $product->regular_price = $request->regular_price;
         if (Carbon::createFromFormat('Y-m-d', $request->expiry_date)->subDays(30) >= Carbon::now()) {
-            $product->regular_price = $request->regular_price - ($request->regular_price * 30 / 100);
+            $product->sale_price = $request->regular_price - ($request->regular_price * 30 / 100);
         } elseif (Carbon::createFromFormat('Y-m-d', $request->expiry_date)->subDays(15) >= Carbon::now()) {
-            $product->regular_price = $request->regular_price - ($request->regular_price * 15 / 100);
-        } else  $product->regular_price = $request->regular_price - ($request->regular_price * 70 / 100);
+            $product->sale_price = $request->regular_price - ($request->regular_price * 15 / 100);
+        } else  $product->sale_price = $request->regular_price - ($request->regular_price * 70 / 100);
 
 
         $product->save();
@@ -104,9 +104,48 @@ class ProductController extends Controller
         $prod_user->user_id = Auth::user()->id;
         $prod_user->product_id = $id;
         $prod_user->comment = $request->comment;
-        $prod_user->check = 0;
+        //$prod_user->check = 0;
         $prod_user->save();
         return ['comment' => $prod_user];
+    }
+
+    public function showComments($id)
+    {
+        $prod_users = ProductUser::where('product_id', $id)->get();
+        return  $prod_users;
+    }
+    public function Liker(Request $request, $id)
+    {
+        $prod_users = ProductUser::where('product_id', $id)->get()/* ->user_id */;
+        $product = Product::findOrFail($id);
+        $i = 0;
+        foreach ($prod_users as $prod_user) {
+            if ($prod_user->user_id == Auth::user()->id) {
+                if ($prod_user->is_like == 0) {
+                    $prod_user->is_like = $request->is_like;
+                    $product->increment('sum_like');
+                    $prod_user->save();
+                    $product->save();
+                } else {
+                    $prod_user->is_like = $request->is_like;
+                    $product->decrement('sum_like');
+                    $prod_user->save();
+                    $product->save();
+                }
+                $i = 1;
+            }
+        }
+        if ($i === 1) {
+            return $prod_users;
+        }
+        $prod_user = new ProductUser();
+        $prod_user->user_id = Auth::user()->id;
+        $prod_user->product_id = $id;
+        $prod_user->is_like = $request->is_like;
+        $product->increment('sum_like');
+        $prod_user->save();
+        $product->save();
+        return ['comment' => $prod_users];
     }
     public function show($id)
     {

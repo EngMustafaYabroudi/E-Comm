@@ -33,7 +33,17 @@ Route::get('/restore/{id}', [ProductController::class, 'restore']);
 Route::get('/restoreAll', [ProductController::class, 'restoreAll']);
 Route::get('/search', [ProductController::class, 'search']);
 Route::get('/sort', [ProductController::class, 'sort']);
+
+
+//////comment and like/////////
+
 Route::post('/comment/{id}', [ProductController::class, 'comment']);
+Route::get('/comment/{id}', [ProductController::class, 'showComments']);
+
+Route::post('/like/{id}', [ProductController::class, 'liker']);
+
+
+
 Route::get('/lang/{locale}', function ($locale, Request $request) {
     if (!in_array($locale, ['ar', 'en'])) {
         abort(400);

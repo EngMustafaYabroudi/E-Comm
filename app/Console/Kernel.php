@@ -34,10 +34,10 @@ class Kernel extends ConsoleKernel
                     return;
                 }
                 if (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(30) >= Carbon::now()) {
-                    $product->regular_price = $product->regular_price - ($product->regular_price * 30 / 100);
+                    $product->sale_price = $product->sale_price - ($product->sale_price * 30 / 100);
                 } elseif (Carbon::createFromFormat('Y-m-d', $product->expiry_date)->subDays(15) >= Carbon::now()) {
-                    $product->regular_price = $product->regular_price - ($product->regular_price * 15 / 100);
-                } else  $product->regular_price = $product->regular_price - ($product->regular_price * 70 / 100);
+                    $product->sale_price = $product->sale_price - ($product->sale_price * 15 / 100);
+                } else  $product->sale_price = $product->sale_price - ($product->sale_price * 70 / 100);
                 $product->save();
             }
         })->daily();
