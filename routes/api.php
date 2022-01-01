@@ -31,7 +31,7 @@ Route::resource('/categories', CategoryController::class);
 Route::resource('/products', ProductController::class);
 Route::get('/restore/{id}', [ProductController::class, 'restore']);
 Route::get('/restoreAll', [ProductController::class, 'restoreAll']);
-Route::get('/search', [ProductController::class, 'search']);
+Route::post('/search', [ProductController::class, 'search']);
 Route::get('/sort', [ProductController::class, 'sort']);
 
 

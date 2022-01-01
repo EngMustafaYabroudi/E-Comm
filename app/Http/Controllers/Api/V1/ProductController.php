@@ -85,7 +85,8 @@ class ProductController extends Controller
 
         $prod_user = ProductUser::create([
             'user_id'    =>    Auth::user()->id,
-            'product_id' =>    $product->id
+            'product_id' =>    $product->id,
+            'is_user'    =>    true
         ]);
         return ['product' => $product];
     }
@@ -150,26 +151,64 @@ class ProductController extends Controller
     public function show($id)
     {
         $product = Product::findOrFail($id);
-        $user = ProductUser::where('product_id', $id)->first();
-        if ($user->user_id == Auth::user()->id && $user->check == 0) {
-            $product->increment('views');
-            $user->update([
+        if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
+            $product->delete();
+            return "this product has finshed Expriate Date";
+        }
+        $user = ProductUser::where('product_id', $id)->get();
+        $inc = 0;
+
+        foreach ($user as $us) {
+            if ($us->user_id == Auth::user()->id && $us->check == 0) {
+                if ($inc == 0) {
+                    $product->increment('views');
+                    $inc = 1;
+                }
+                $product->increment('views');
+                $us->update([
+                    'user_id'    =>  Auth::user()->id,
+                    'product_id' =>  $id,
+                    'check'      => 1
+                ]);
+            }
+        }
+        if (ProductUser::where('user_id', Auth::user()->id)->get() == null) {
+            $prod = ProductUser::create([
                 'user_id'    =>  Auth::user()->id,
-                'product_id' =>  $id,
-                'check'      => 1
+                'product_id' => $id,
+                'check'      => 1,
+                'is_user'    => false
             ]);
-            /* "name":"alia",
+            $product->increment('views');
+        } else {
+            $variable = ProductUser::where('user_id', Auth::user()->id)->get();
+            //return $variable;
+            foreach ($variable as $key) {
+                if ($key->product_id == $id) {
+                    return $product;
+                }
+            }
+            $prod = ProductUser::create([
+                'user_id'    =>  Auth::user()->id,
+                'product_id' => $id,
+                'check'      => 1,
+                'is_user'    => false
+            ]);
+            $product->increment('views');
+        }
+
+
+
+
+        /* "name":"alia",
             "expiry_date":"2022-8-25",
             "image":"http://127.0.0.1:8000/api/products",
             "commun_info":"http://127.0.0.1:8000/api/products",
             "category_id":1,
             "regular_price":444,
             "quantity":444 */
-        }
-        if ($product->expiry_date <= Carbon::now()->format('Y-m-d')) {
-            $product->delete();
-            return "this product has finshed Expriate Date";
-        }
+
+
         return ['product' => $product];
     }
 
