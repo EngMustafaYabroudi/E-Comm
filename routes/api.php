@@ -2,6 +2,7 @@
 
 use App\Http\Controllers\Api\V1\AuthController;
 use App\Http\Controllers\Api\V1\CategoryController;
+use App\Http\Controllers\Api\V1\LikeController;
 use App\Http\Controllers\Api\V1\ProductController;
 use Illuminate\Http\Request;
 use Illuminate\Support\Facades\App;
@@ -28,6 +29,7 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
 Route::resource('/categories', CategoryController::class);
+Route::resource('/likes', LikeController::class);
 Route::resource('/products', ProductController::class);
 Route::get('/restore/{id}', [ProductController::class, 'restore']);
 Route::get('/restoreAll', [ProductController::class, 'restoreAll']);
@@ -39,8 +41,9 @@ Route::get('/sort', [ProductController::class, 'sort']);
 
 Route::post('/comment/{id}', [ProductController::class, 'comment']);
 Route::get('/comment/{id}', [ProductController::class, 'showComments']);
+Route::get('/like/{id}', [ProductController::class, 'liker']);
+Route::get('productUser', [ProductController::class, 'getProductToUSer']);
 
-Route::post('/like/{id}', [ProductController::class, 'liker']);
 
 
 

@@ -29,6 +29,17 @@ class ProductController extends Controller
         return Product::paginate(4);
         /*  return  Product::where('deleted_at', '2021-12-17 08:39:24')->get(); */
     }
+    /**
+     * Show the form for creating a new resource.
+     *
+     * @return \Illuminate\Http\Response
+     */
+
+    public function  create()
+    {
+
+        return Category::all();
+    }
 
     /**
      * Show the form for creating a new resource.
@@ -80,15 +91,15 @@ class ProductController extends Controller
 
 
         $product->save();
-        //return $product;
-        //$product->users()->sync($request->users);
 
-        $prod_user = ProductUser::create([
-            'user_id'    =>    Auth::user()->id,
-            'product_id' =>    $product->id,
-            'is_user'    =>    true
-        ]);
-        return ['product' => $product];
+
+        $prod_user = new ProductUser();
+        $prod_user->user_id    =   Auth::user()->id;
+        $prod_user->product_id =   $product->id;
+        $prod_user->is_user   =   1;
+        $prod_user->save();
+
+        return ['product' => $product, 'prod_user' => $prod_user];
     }
 
     /**
@@ -115,7 +126,7 @@ class ProductController extends Controller
         $prod_users = ProductUser::where('product_id', $id)->get();
         return  $prod_users;
     }
-    public function Liker(Request $request, $id)
+    public function Liker($id)
     {
         $prod_users = ProductUser::where('product_id', $id)->get()/* ->user_id */;
         $product = Product::findOrFail($id);
@@ -123,13 +134,8 @@ class ProductController extends Controller
         foreach ($prod_users as $prod_user) {
             if ($prod_user->user_id == Auth::user()->id) {
                 if ($prod_user->is_like == 0) {
-                    $prod_user->is_like = $request->is_like;
+                    $prod_user->is_like = 1;
                     $product->increment('sum_like');
-                    $prod_user->save();
-                    $product->save();
-                } else {
-                    $prod_user->is_like = $request->is_like;
-                    $product->decrement('sum_like');
                     $prod_user->save();
                     $product->save();
                 }
@@ -142,11 +148,11 @@ class ProductController extends Controller
         $prod_user = new ProductUser();
         $prod_user->user_id = Auth::user()->id;
         $prod_user->product_id = $id;
-        $prod_user->is_like = $request->is_like;
+        $prod_user->is_like = 1;
         $product->increment('sum_like');
         $prod_user->save();
         $product->save();
-        return ['comment' => $prod_users];
+        return ['product' => $product];
     }
     public function show($id)
     {
@@ -212,7 +218,21 @@ class ProductController extends Controller
         return ['product' => $product];
     }
 
-
+    public function getProductToUSer()
+    {
+        $products = ProductUser::where('user_id', Auth::user()->id)->get();
+        $prod = [];
+        $i = 0;
+        foreach ($products as $product) {
+            if ($product->is_user == 1) {
+                $hasProduct = Product::findOrFail($product->product_id);
+                $prod[$i] = $hasProduct;
+                $i++;
+            }
+        }
+        /*  print_r($prod); */
+        return  $prod;
+    }
     /**
      * Update the specified resource in storage.
      *
