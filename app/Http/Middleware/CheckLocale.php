@@ -18,7 +18,7 @@ class CheckLocale
      */
     public function handle(Request $request, Closure $next)
     {
-        $locale = 'en';/* Session::get('locale', 'en'); */
+        $locale = Session::get('locale', 'en');
         ///return $locale;
 
         App::setLocale($locale);

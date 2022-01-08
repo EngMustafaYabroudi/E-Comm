@@ -15,6 +15,10 @@ class LikeController extends Controller
      *
      * @return \Illuminate\Http\Response
      */
+    public function __construct()
+    {
+        $this->middleware('auth:sanctum');
+    }
     public function index()
     {
         //
@@ -55,16 +59,17 @@ class LikeController extends Controller
         $i = 0;
         foreach ($likes as $like) {
             if ($like->user_id == Auth::user()->id) {
-                if ($like->is_like == false) {
+                if ($like->is_like == 0) {
                     if ($inc == 0) {
+                        ///return 'sfs';
                         $inc = 1;
-                        $product->increment('sum_like');
-                        $like->is_like = true;
+                        $product->sum_like += 1;
+                        $like->is_like = 1;
                         $product->save();
                         $like->save();
                     }
                 }
-                $like->is_like = true;
+                $like->is_like = 1;
                 $like->save();
                 $i = 1;
             }
@@ -72,9 +77,10 @@ class LikeController extends Controller
         if ($i == 0) {
             $pro = new ProductUser();
             $pro->user_id = Auth::user()->id;
-            $pro->is_like = true;
+            $pro->is_like = 1;
             $pro->product_id = $id;
-            $product->increment('sum_like');
+            $product->sum_like += 1;
+            $product->save();
             $pro->save();
         }
         return ['sucess add like', 'product' => $product];
