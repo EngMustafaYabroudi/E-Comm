@@ -125,6 +125,26 @@ class LikeController extends Controller
      */
     public function destroy($id)
     {
-        //
+        $product = Product::findOrFail($id);
+        $likes = ProductUser::where('product_id', $id)->get();
+        $inc = 0;
+        foreach ($likes as $like) {
+            if ($like->user_id == Auth::user()->id) {
+                if ($like->is_like == 1) {
+                    if ($inc == 0) {
+                        ///return 'sfs';
+                        $inc = 1;
+                        $product->sum_like -= 1;
+                        $like->is_like = 0;
+                        $product->save();
+                        $like->save();
+                    }
+                }
+                $like->is_like = 0;
+                $like->save();
+                $i = 1;
+            }
+        }
+        return ['sucess delete like', 'product' => $product];
     }
 }
