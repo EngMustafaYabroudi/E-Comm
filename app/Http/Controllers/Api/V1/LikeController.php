@@ -98,11 +98,11 @@ class LikeController extends Controller
         foreach ($products as $product) {
             if ($product->user_id == Auth::user()->id) {
                 if ($product->is_like == 1) {
-                    return true;
+                    return 1;
                 }
             }
         }
-        return false;
+        return 0;
     }
 
     /**
