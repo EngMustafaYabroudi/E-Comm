@@ -38,7 +38,8 @@ class ProductController extends Controller
     public function  create()
     {
 
-        return Category::all();
+        $categories = Category::all();
+        return  Category::all();/* view('create', ['categories' => $categories]) */;
     }
 
     /**
@@ -55,8 +56,8 @@ class ProductController extends Controller
             'name'                     => 'required|min:4|max:255',
             'regular_price'            => 'required|numeric|min:0',
             'commun_info'              => 'required|min:4|url',
-            'image'                    => 'required_without:image_upload|url|nullable',
-            'image_upload'             => 'required_without:image|file|image|nullable',
+            //'image'                    => 'required_without:image_upload|url|nullable',
+            'image'                    => 'required',
             'quantity'                 => 'required|numeric|min:0',
             'category_id'              => 'required|numeric|exists:categories,id',
             'expiry_date'              => 'required|date',
@@ -70,13 +71,12 @@ class ProductController extends Controller
         $product->name = $request->name;
         $product->commun_info = $request->commun_info;
         $product->quantity = $request->quantity;
-        if ($request->has('image_upload')) {
-            $image = $request->image_upload;
-            $path = $image->store('product-images', 'public');
-            $product->image = $path;
-        } else {
-            $product->image = $request->image;
-        }
+
+        $image = $request->image;
+        $path = $image->store('product-images', 'public');
+        $product->image = $path;
+
+
         $product->category_id = $request->category_id;
         $product->expiry_date = $request->expiry_date;
         $product->regular_price = $request->regular_price;
