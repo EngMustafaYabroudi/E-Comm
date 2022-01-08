@@ -92,9 +92,17 @@ class LikeController extends Controller
      * @param  int  $id
      * @return \Illuminate\Http\Response
      */
-    public function edit($id)
+    public function showIsLike($id)
     {
-        //
+        $products = ProductUser::where('product_id', $id)->get();
+        foreach ($products as $product) {
+            if ($product->user_id == Auth::user()->id) {
+                if ($product->is_like == 1) {
+                    return true;
+                }
+            }
+        }
+        return false;
     }
 
     /**

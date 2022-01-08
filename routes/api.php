@@ -41,7 +41,7 @@ Route::get('/sort', [ProductController::class, 'sort']);
 
 Route::post('/comment/{id}', [ProductController::class, 'comment']);
 Route::get('/comment/{id}', [ProductController::class, 'showComments']);
-///Route::get('/like/{id}', [ProductController::class, 'liker']);
+Route::get('/showLike/{id}', [LikeController::class, 'showIsLike']);
 Route::get('productUser', [ProductController::class, 'getProductToUSer']);
 
 
