@@ -250,11 +250,9 @@ class ProductController extends Controller
     {
 
         $product = Product::findOrFail($id);
-        if (Auth::user()->id == $product->user_id) {
-            $product->delete();
-            return "has delete";
-        }
-        return "the permission deined";
+
+        $product->delete();
+        return "has deleted";
     }
     public function restoreAll()
     {
