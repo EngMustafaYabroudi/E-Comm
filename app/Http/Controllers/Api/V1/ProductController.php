@@ -38,7 +38,7 @@ class ProductController extends Controller
     public function  create()
     {
 
-        $categories = Category::all();
+        //$categories = Category::all();
         return  Category::all();/* view('create', ['categories' => $categories]) */;
     }
 
@@ -57,7 +57,7 @@ class ProductController extends Controller
             'regular_price'            => 'required|numeric|min:0',
             'commun_info'              => 'required|min:4|url',
             //'image'                    => 'required_without:image_upload|url|nullable',
-            'image'                    => 'required',
+            'image'                    => 'required|file|image',
             'quantity'                 => 'required|numeric|min:0',
             'category_id'              => 'required|numeric|exists:categories,id',
             'expiry_date'              => 'required|date',
