@@ -16,7 +16,7 @@ class CategoryController extends Controller
      */
     public function __construct()
     {
-        $this->middleware('auth:sanctum');
+      $this->middleware('auth:sanctum');
     }
 
     /**
@@ -26,6 +26,7 @@ class CategoryController extends Controller
      */
     public function index()
     {
+        
         return Category::all();
     }
 
@@ -38,7 +39,7 @@ class CategoryController extends Controller
     public function store(Request $request)
     {
         $request->validate([
-            'name'  => 'required|min:3|max:255',
+            'name'  => 'string',
             //'slug'  => 'required|min:3|string',
 
         ]);

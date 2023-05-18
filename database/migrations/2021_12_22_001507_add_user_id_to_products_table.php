@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class AddIsUserToProductUsersTable extends Migration
+class AddUserIdToProductsTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,8 +13,9 @@ class AddIsUserToProductUsersTable extends Migration
      */
     public function up()
     {
-        Schema::table('product_users', function (Blueprint $table) {
-            $table->boolean('is_user')->default(false);
+        Schema::table('products', function (Blueprint $table) {
+            $table->bigInteger('user_id')->unsigned()->nullable();
+            $table->foreign('user_id')->references('id')->on('users')->onDelete('cascade');
         });
     }
 
@@ -25,9 +26,8 @@ class AddIsUserToProductUsersTable extends Migration
      */
     public function down()
     {
-        Schema::table('product_users', function (Blueprint $table) {
-            $table->dropColumn('is_user');
+        Schema::table('products', function (Blueprint $table) {
+            $table->dropColumn('user_id');
         });
     }
-    
 }

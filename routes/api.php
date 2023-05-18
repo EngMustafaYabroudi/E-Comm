@@ -28,7 +28,10 @@ Route::group(['middleware' => 'auth:sanctum'], function () {
 });
 Route::post('/login', [AuthController::class, 'login']);
 Route::post('/register', [AuthController::class, 'register']);
-Route::resource('/categories', CategoryController::class);
+//Route::resource('/categories', CategoryController::class);
+//Route::get('/categories/store', [CategoryController::class,'store']);
+Route::post('/categories/store', [CategoryController::class,'store']);
+Route::resource('/likes', LikeController::class);
 Route::resource('/likes', LikeController::class);
 Route::resource('/products', ProductController::class);
 Route::get('/restore/{id}', [ProductController::class, 'restore']);

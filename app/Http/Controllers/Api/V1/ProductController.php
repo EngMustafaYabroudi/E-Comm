@@ -75,7 +75,7 @@ class ProductController extends Controller
         $product->quantity = $request->quantity;
         if ($request->has('image_upload')) {
             $image = $request->image_upload;
-            $path = $image->store('product-images', 'public');
+            $path = $image->store('product-images','public');
             $product->image = $path;
         } else {
             $product->image = $request->image;
