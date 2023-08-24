@@ -44,7 +44,7 @@ Route::get('/sort', [ProductController::class, 'sort']);
 
 Route::post('/comment/{id}', [ProductController::class, 'comment']);
 Route::get('/comment/{id}', [ProductController::class, 'showComments']);
-Route::get('/like/{id}', [ProductController::class, 'liker']);
+Route::get('/showLike/{id}', [LikeController::class, 'showIsLike']);
 Route::get('productUser', [ProductController::class, 'getProductToUSer']);
 
 
@@ -55,8 +55,8 @@ Route::get('/lang/{locale}', function ($locale, Request $request) {
         abort(400);
     }
     App::setLocale($locale);
-    ///$request->session()->put('locale', $locale);
-    // return Session::get('locale');
+    $request->session()->put('locale', $locale);
+    //return Session::get('locale');
     $ll = __('auth.email');
     return $ll;
 });
